@@ -3,8 +3,10 @@ from app.models.audit import AuditLog
 from app.models.base import Base
 from app.models.document import DocumentType, VehicleDocument
 from app.models.driver import Driver
+from app.models.fuel import FuelTransaction, ImportBatch, ImportStatus
 from app.models.maintenance import MaintenanceRule
 from app.models.service import ServiceRecord
+from app.models.trip_sheet import TripSheet, TripStatus
 from app.models.user import Role, User
 from app.models.vehicle import FuelType, Vehicle, VehicleStatus
 
@@ -13,10 +15,15 @@ __all__ = [
     "Base",
     "DocumentType",
     "Driver",
+    "FuelTransaction",
     "FuelType",
+    "ImportBatch",
+    "ImportStatus",
     "MaintenanceRule",
     "Role",
     "ServiceRecord",
+    "TripSheet",
+    "TripStatus",
     "User",
     "Vehicle",
     "VehicleDocument",

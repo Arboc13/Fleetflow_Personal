@@ -1,0 +1,8 @@
+date,plate,fuel_card,liters,price,odometer,station
+2026-06-01,B-100-AAA,,45.5,7.20,20100,OMV Cluj
+2026-06-02,,CARD-001,40,7.10,,Petrom Deva
+2026-06-03,B-100-AAA,,80,7.00,20300,Rompetrol
+2026-06-04,B-100-AAA,,30,7.00,19000,MOL
+2026-06-05,X-999-ZZZ,,30,7.00,21000,Lukoil
+2026-06-06,B-100-AAA,,abc,7.00,21000,OMV Cluj
+,B-100-AAA,,25,7.00,21050,OMV Cluj

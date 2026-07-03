@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     # CORS — Vite dev server + LAN phone access are added in .env when needed
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:5173"]
 
+    # Where uploaded fuel-import files are stored before parsing (F-402)
+    UPLOAD_DIR: str = "uploads"
+
 
 @lru_cache
 def get_settings() -> Settings:

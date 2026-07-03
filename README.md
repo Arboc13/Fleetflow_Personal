@@ -75,7 +75,7 @@ docker-compose.yml
 2. **Vehicles + drivers CRUD** (plate/VIN validation, CNP masking, audit log) ← _done_
 3. Allocations (no-overlap exclusion constraints) + handover reports (immutability)
 4. **Documents + service records + maintenance rules** ← _done_
-5. Trip sheets + fuel import parser
+5. **Trip sheets + fuel import parser** ← _done_
 6. Alert engine (APScheduler) + notification center
 7. TCO + utilization reports (xlsx/PDF export)
 8. Dual UI + PWA (driver mobile pages, admin dashboard, LAN access)
