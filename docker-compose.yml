@@ -1,0 +1,22 @@
+# PostgreSQL only — the FastAPI app and Vite frontend run natively during dev.
+# Start with:  docker compose up -d
+services:
+  db:
+    image: postgres:16
+    container_name: fleetflow-db
+    environment:
+      POSTGRES_USER: fleetflow
+      POSTGRES_PASSWORD: fleetflow
+      POSTGRES_DB: fleetflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - fleetflow_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fleetflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  fleetflow_pgdata:
