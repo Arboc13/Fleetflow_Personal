@@ -74,7 +74,7 @@ docker-compose.yml
 1. **Scaffold** — repo, Docker Postgres, FastAPI skeleton, JWT auth + RBAC ← _done_
 2. **Vehicles + drivers CRUD** (plate/VIN validation, CNP masking, audit log) ← _done_
 3. Allocations (no-overlap exclusion constraints) + handover reports (immutability)
-4. Documents + service records + maintenance rules
+4. **Documents + service records + maintenance rules** ← _done_
 5. Trip sheets + fuel import parser
 6. Alert engine (APScheduler) + notification center
 7. TCO + utilization reports (xlsx/PDF export)
