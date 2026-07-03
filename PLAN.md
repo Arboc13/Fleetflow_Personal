@@ -18,7 +18,7 @@ The PDF (`Caiet de Sarcini 3.pdf`) is the spec for **FleetFlow**, a fleet manage
 | Background jobs | **APScheduler** (in-process, SQLAlchemy job store) | Daily alert scans without Redis/Celery infrastructure — right size for a local app |
 | CSV/Excel parsing | **pandas + openpyxl** | Strongest tooling for the fuel-import parser (F-402) and native-number Excel exports (F-602) — the main reason Python wins here |
 | PDF export | **ReportLab** / `xhtml2pdf` (HTML→PDF, pure Python) | Print-optimized reports (F-602) — see note below on why not WeasyPrint |
-| Auth | JWT (python-jose) + passlib bcrypt | Password hashing (NFR-1), role claims for RBAC |
+| Auth | JWT (**PyJWT**) + **pwdlib** bcrypt | Password hashing (NFR-1), role claims for RBAC. _Changed from python-jose/passlib: passlib needs the `crypt` stdlib module removed in Python 3.13; PyJWT/pwdlib are what current FastAPI docs use._ |
 | Frontend | **React 18 + Vite + TypeScript + Tailwind CSS** | One responsive codebase; Tailwind breakpoints for the dual design; `vite-plugin-pwa` for installability |
 | Charts/UI | Recharts + Headless UI | Dashboard indicators (red/yellow status) |
 

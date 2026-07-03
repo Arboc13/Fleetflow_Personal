@@ -55,3 +55,8 @@ def require_roles(*roles: Role) -> Callable[..., User]:
         return user
 
     return checker
+
+
+# Reusable guards. Managers + admins manage the fleet; only admins may hard-delete.
+manager_or_admin = require_roles(Role.admin, Role.fleet_manager)
+admin_only = require_roles(Role.admin)

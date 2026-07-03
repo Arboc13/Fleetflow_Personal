@@ -72,7 +72,7 @@ docker-compose.yml
 ## Build order (milestones)
 
 1. **Scaffold** — repo, Docker Postgres, FastAPI skeleton, JWT auth + RBAC ← _done_
-2. Vehicles + drivers CRUD (plate/VIN validation, CNP masking, audit log)
+2. **Vehicles + drivers CRUD** (plate/VIN validation, CNP masking, audit log) ← _done_
 3. Allocations (no-overlap exclusion constraints) + handover reports (immutability)
 4. Documents + service records + maintenance rules
 5. Trip sheets + fuel import parser

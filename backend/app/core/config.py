@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 8  # 8 hours
 
+    # Fernet key for encrypting CNP at rest (NFR-1). MUST be overridden in .env
+    # in production. Generate one: python -c "from cryptography.fernet import
+    # Fernet; print(Fernet.generate_key().decode())"
+    ENCRYPTION_KEY: str = "yZ4wylYaDUtSqNdeIpNWVzm2Vlr4hGBaJLDFJ7LV15Y="
+
     # CORS — Vite dev server + LAN phone access are added in .env when needed
     BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:5173"]
 
