@@ -34,7 +34,8 @@ def upload_fuel_file(
     db: Session = Depends(get_db),
     user: User = Depends(manager_or_admin),
 ) -> ImportBatch:
-    filename = file.filename or "upload"
+    # Path(...).name strips any client-supplied directory parts (path traversal).
+    filename = Path(file.filename or "upload").name or "upload"
     if not filename.lower().endswith(ALLOWED_EXT):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

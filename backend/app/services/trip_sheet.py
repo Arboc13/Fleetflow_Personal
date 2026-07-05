@@ -13,6 +13,11 @@ from app.services.vehicle import get_vehicle
 _CLOSED_MSG = "Closed trip sheets are immutable (rule 2.3)."
 
 
+def _as_utc(value: dt.datetime) -> dt.datetime:
+    """Treat naive datetimes as UTC so aware/naive values compare safely."""
+    return value if value.tzinfo else value.replace(tzinfo=dt.timezone.utc)
+
+
 def _driver_for_user(db: Session, user: User) -> Driver:
     driver = db.scalar(select(Driver).where(Driver.user_id == user.id))
     if driver is None:
@@ -121,6 +126,11 @@ def close_trip_sheet(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="end_km must be greater than start_km.",
+        )
+    if _as_utc(data.arrival_at) <= _as_utc(trip.departure_at):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="arrival_at must be after departure_at.",
         )
 
     trip.arrival_at = data.arrival_at

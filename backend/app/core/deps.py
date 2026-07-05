@@ -31,13 +31,12 @@ def get_current_user(
     )
     try:
         payload = decode_access_token(token)
-        subject = payload.get("sub")
-        if subject is None:
-            raise creds_exc
-    except jwt.PyJWTError as exc:
+        # int() also rejects a missing (None) or non-numeric subject.
+        subject = int(payload.get("sub"))
+    except (jwt.PyJWTError, TypeError, ValueError) as exc:
         raise creds_exc from exc
 
-    user = db.get(User, int(subject))
+    user = db.get(User, subject)
     if user is None or not user.is_active:
         raise creds_exc
     return user

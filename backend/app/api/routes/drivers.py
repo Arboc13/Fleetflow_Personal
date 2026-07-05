@@ -1,12 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.core.deps import (
-    admin_only,
-    get_current_user,
-    get_db,
-    manager_or_admin,
-)
+from app.core.deps import admin_only, get_db, manager_or_admin
 from app.models.user import User
 from app.schemas.driver import DriverCreate, DriverRead, DriverUpdate
 from app.services import driver as svc

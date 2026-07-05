@@ -78,7 +78,9 @@ def _parse_row(
         liters = Decimal(liters_raw) if liters_raw is not None else None
     except (InvalidOperation, TypeError):
         liters = None
-    if liters is None or liters <= 0:
+    # is_finite() rejects NaN/Infinity, which would otherwise blow up the
+    # comparison or the DB insert and fail the whole batch.
+    if liters is None or not liters.is_finite() or liters <= 0:
         raise ValueError(f"invalid liters: {liters_raw!r}")
 
     price_raw = _clean(row.get("price"))
@@ -86,9 +88,16 @@ def _parse_row(
         price = Decimal(price_raw) if price_raw is not None else None
     except (InvalidOperation, TypeError):
         price = None
+    if price is not None and not price.is_finite():
+        price = None
 
     odo_raw = _clean(row.get("odometer"))
-    odometer = int(float(odo_raw)) if odo_raw is not None else None
+    odometer = None
+    if odo_raw is not None:
+        try:
+            odometer = int(float(odo_raw))
+        except (ValueError, OverflowError):
+            raise ValueError(f"invalid odometer: {odo_raw!r}") from None
 
     reasons = _suspect_reasons(vehicle, liters, odometer)
     return FuelTransaction(
@@ -153,9 +162,15 @@ def process_import(db: Session, batch_id: int, file_path: str) -> ImportBatch:
 
 def run_import_in_background(batch_id: int, file_path: str) -> None:
     """Entry point for BackgroundTasks — owns its own DB session."""
+    from app.services.alerts import run_alert_scan  # local import avoids cycle
+
     db = SessionLocal()
     try:
         process_import(db, batch_id, file_path)
+        try:
+            run_alert_scan(db)  # on-demand trigger after import (rule 2.2)
+        except Exception:  # noqa: BLE001 — alerts must never fail the import
+            db.rollback()
     except Exception:  # noqa: BLE001 — status already persisted as 'failed'
         pass
     finally:

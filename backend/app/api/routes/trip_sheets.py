@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, BackgroundTasks, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.deps import admin_only, get_current_user, get_db
@@ -11,6 +11,7 @@ from app.schemas.trip_sheet import (
     TripSheetUpdate,
 )
 from app.services import trip_sheet as svc
+from app.services.alerts import run_alert_scan_in_background
 
 router = APIRouter(prefix="/trip-sheets", tags=["trip-sheets"])
 
@@ -60,10 +61,14 @@ def update_trip_sheet(
 def close_trip_sheet(
     trip_id: int,
     data: TripSheetClose,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    return svc.close_trip_sheet(db, trip_id, data, user)
+    trip = svc.close_trip_sheet(db, trip_id, data, user)
+    # Closing advances the odometer, which may cross a maintenance threshold.
+    background_tasks.add_task(run_alert_scan_in_background)
+    return trip
 
 
 @router.delete("/{trip_id}", status_code=status.HTTP_204_NO_CONTENT)
