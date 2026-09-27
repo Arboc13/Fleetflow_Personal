@@ -100,23 +100,6 @@ fleetflow/
 7. **Module 6**: TCO + utilization reports, xlsx/PDF export. ← _done_
 8. **Dual UI + PWA**: driver mobile pages (big buttons, numeric keypads), admin dashboard (red/yellow indicators), `vite-plugin-pwa`, bind dev servers to `0.0.0.0` for phone access over LAN. ← _done (code complete 2026-07-05)_
 
-## Status & remaining work (as of 2026-07-05)
-
-All 8 milestones are implemented and committed. Backend: 49 pytest tests passing
-(in-memory SQLite). Frontend: complete but **compiler-unverified** — Node.js is
-not installed yet, so `npm install` / `tsc` / `vite build` have never run.
-
-Remaining before the project can be called verified (see Verification below):
-
-1. **Install Node.js 20+ on `D:\`** → `cd frontend && npm install && npm run dev`;
-   fix any TypeScript errors the first build surfaces.
-2. **Install Docker Desktop on `D:\`** → `docker compose up -d`, `alembic upgrade head`,
-   `python -m scripts.seed` — then exercise the Postgres-only rules the SQLite
-   tests can't check: allocation overlap exclusion constraints and the
-   closed-record immutability triggers.
-3. End-to-end pass of the Verification checklist: fuel import with corrupt-row
-   CSVs from `sample-data/`, crash-consistency kill test, hand-checked TCO vs
-   the app, and the phone test (driver login + PWA install over LAN).
 
 ## Verification
 
