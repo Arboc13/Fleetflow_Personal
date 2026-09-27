@@ -1,11 +1,26 @@
 # FleetFlow
 
-Fleet management system (Holisun internship project - personal). Vehicles, drivers,
-allocations, legal documents, service history, fuel imports, predictive
-maintenance alerts, and cost-per-km (TCO) reports.
+Fleet management system covering vehicles, drivers, allocations, legal
+documents, service history, fuel imports, predictive maintenance alerts, and
+cost-per-km (TCO) reports.
 
 One codebase, two experiences: a desktop admin dashboard and a mobile-first
 driver PWA on the same API. See [`PLAN.md`](PLAN.md) for the full design.
+
+## About this project
+
+This repository is my personal implementation of the FleetFlow project,
+developed in parallel with the team project for my internship at Holisun. It was built through AI-assisted
+programming and served as a hands-on exercise in using agentic coding tools
+and understanding how they work in practice.
+
+The work followed an iterative, module-by-module workflow. I defined the
+requirements and architecture, and an AI coding agent implemented each module
+against them. I reviewed every module before moving on to the next one, then
+tested, debugged, and refined the application. The goal was to deliver a
+working application and, just as importantly, to learn where agentic
+development speeds up delivery and where engineering judgment, review, and
+testing are still essential.
 
 ## Stack
 
