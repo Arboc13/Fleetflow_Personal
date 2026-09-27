@@ -1,6 +1,8 @@
 # FleetFlow
 
-Fleet management system (Holisun internship project - personal). Vehicles, drivers,
+This is my personal, solo implementation of FleetFlow, a fleet management system based on the requirements given during the Holisun Intership program.
+
+Fleet management system (Holisun internship project). Vehicles, drivers,
 allocations, legal documents, service history, fuel imports, predictive
 maintenance alerts, and cost-per-km (TCO) reports.
 
