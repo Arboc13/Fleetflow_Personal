@@ -9,6 +9,7 @@ from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0004"
 down_revision: str | None = "0003"
@@ -60,7 +61,7 @@ def upgrade() -> None:
         sa.Column("purpose", sa.String(length=255), nullable=True),
         sa.Column(
             "status",
-            sa.Enum("draft", "closed", name="trip_status", create_type=False),
+            postgresql.ENUM("draft", "closed", name="trip_status", create_type=False),
             nullable=False,
             server_default="draft",
         ),
@@ -86,7 +87,7 @@ def upgrade() -> None:
         sa.Column("filename", sa.String(length=255), nullable=False),
         sa.Column(
             "status",
-            sa.Enum(
+            postgresql.ENUM(
                 "pending", "processing", "completed", "failed",
                 name="import_status", create_type=False,
             ),

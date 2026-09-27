@@ -1,3 +1,6 @@
+import hashlib
+import hmac
+
 from cryptography.fernet import Fernet
 
 from app.core.config import settings
@@ -12,6 +15,15 @@ def encrypt(value: str) -> str:
 
 def decrypt(token: str) -> str:
     return _fernet.decrypt(token.encode()).decode()
+
+
+def cnp_fingerprint(cnp: str) -> str:
+    """Deterministic keyed hash of a CNP, so uniqueness can be enforced.
+
+    Fernet output is randomized, so the encrypted column can't be unique-indexed.
+    """
+    key = settings.ENCRYPTION_KEY.encode()
+    return hmac.new(key, cnp.encode(), hashlib.sha256).hexdigest()
 
 
 def mask_cnp(cnp: str) -> str:

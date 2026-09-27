@@ -19,8 +19,10 @@ class Driver(Base, TimestampMixin, SoftDeleteMixin):
 
     # CNP is encrypted at rest (NFR-1) and only ever returned masked.
     cnp_encrypted: Mapped[str] = mapped_column(String(255), nullable=False)
+    # HMAC of the CNP (crypto.cnp_fingerprint) — enforces one driver per CNP.
+    cnp_hash: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
 
-    license_number: Mapped[str] = mapped_column(String(30), nullable=False)
+    license_number: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
     license_series: Mapped[str | None] = mapped_column(String(10), nullable=True)
     license_category: Mapped[str] = mapped_column(String(20), nullable=False)
     license_expiry: Mapped[dt.date] = mapped_column(Date, nullable=False)

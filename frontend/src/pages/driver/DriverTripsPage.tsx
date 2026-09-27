@@ -34,6 +34,12 @@ export default function DriverTripsPage() {
     [allocations.data],
   );
 
+  // Closing a trip advances the vehicle odometer, so refetch vehicles too.
+  const refresh = () => {
+    trips.reload();
+    vehicles.reload();
+  };
+
   const all = trips.data ?? [];
   const openTrip = all.find((t) => t.status === "draft");
   const history = all.filter((t) => t.status === "closed");
@@ -43,12 +49,12 @@ export default function DriverTripsPage() {
       {trips.loading ? (
         <Loading />
       ) : openTrip ? (
-        <CloseTripCard trip={openTrip} plate={vehicleById.get(openTrip.vehicle_id)?.plate} onDone={trips.reload} />
+        <CloseTripCard trip={openTrip} plate={vehicleById.get(openTrip.vehicle_id)?.plate} onDone={refresh} />
       ) : (
         <StartTripCard
           vehicleIds={myVehicleIds}
           vehicleById={vehicleById}
-          onDone={trips.reload}
+          onDone={refresh}
         />
       )}
 

@@ -9,6 +9,7 @@ from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0003"
 down_revision: str | None = "0002"
@@ -26,7 +27,7 @@ def upgrade() -> None:
         sa.Column("vehicle_id", sa.Integer(), nullable=False),
         sa.Column(
             "type",
-            sa.Enum(
+            postgresql.ENUM(
                 "RCA", "CASCO", "ITP", "Rovinieta",
                 name="document_type", create_type=False,
             ),

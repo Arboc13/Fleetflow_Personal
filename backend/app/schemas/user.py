@@ -16,5 +16,6 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
+    email: str  # output: don't re-validate stored emails (e.g. seeded *.local)
     id: int
     is_active: bool

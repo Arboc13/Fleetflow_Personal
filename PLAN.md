@@ -91,14 +91,32 @@ fleetflow/
 
 ## Milestones (build order)
 
-1. **Scaffold**: git init, docker-compose PostgreSQL, FastAPI skeleton + Alembic, Vite React app, JWT auth + RBAC guards, seed script.
-2. **Module 1**: vehicles + drivers CRUD with live plate/VIN validation (non-blocking form feedback, NFR-3), CNP masking, audit log on odometer edits.
-3. **Module 2**: allocations with exclusion constraints + handover reports + immutability triggers. *Test: two overlapping allocations must be impossible, even issued concurrently.*
-4. **Module 3**: documents + service records + maintenance rules.
-5. **Module 4**: trip sheets + fuel import parser with error reporting.
-6. **Module 5**: alert engine (APScheduler) + notification center.
-7. **Module 6**: TCO + utilization reports, xlsx/PDF export.
-8. **Dual UI + PWA**: driver mobile pages (big buttons, numeric keypads), admin dashboard (red/yellow indicators), `vite-plugin-pwa`, bind dev servers to `0.0.0.0` for phone access over LAN.
+1. **Scaffold**: git init, docker-compose PostgreSQL, FastAPI skeleton + Alembic, Vite React app, JWT auth + RBAC guards, seed script. ← _done_
+2. **Module 1**: vehicles + drivers CRUD with live plate/VIN validation (non-blocking form feedback, NFR-3), CNP masking, audit log on odometer edits. ← _done_
+3. **Module 2**: allocations with exclusion constraints + handover reports + immutability triggers. *Test: two overlapping allocations must be impossible, even issued concurrently.* ← _done_
+4. **Module 3**: documents + service records + maintenance rules. ← _done_
+5. **Module 4**: trip sheets + fuel import parser with error reporting. ← _done_
+6. **Module 5**: alert engine (APScheduler) + notification center. ← _done_
+7. **Module 6**: TCO + utilization reports, xlsx/PDF export. ← _done_
+8. **Dual UI + PWA**: driver mobile pages (big buttons, numeric keypads), admin dashboard (red/yellow indicators), `vite-plugin-pwa`, bind dev servers to `0.0.0.0` for phone access over LAN. ← _done (code complete 2026-07-05)_
+
+## Status & remaining work (as of 2026-07-05)
+
+All 8 milestones are implemented and committed. Backend: 49 pytest tests passing
+(in-memory SQLite). Frontend: complete but **compiler-unverified** — Node.js is
+not installed yet, so `npm install` / `tsc` / `vite build` have never run.
+
+Remaining before the project can be called verified (see Verification below):
+
+1. **Install Node.js 20+ on `D:\`** → `cd frontend && npm install && npm run dev`;
+   fix any TypeScript errors the first build surfaces.
+2. **Install Docker Desktop on `D:\`** → `docker compose up -d`, `alembic upgrade head`,
+   `python -m scripts.seed` — then exercise the Postgres-only rules the SQLite
+   tests can't check: allocation overlap exclusion constraints and the
+   closed-record immutability triggers.
+3. End-to-end pass of the Verification checklist: fuel import with corrupt-row
+   CSVs from `sample-data/`, crash-consistency kill test, hand-checked TCO vs
+   the app, and the phone test (driver login + PWA install over LAN).
 
 ## Verification
 

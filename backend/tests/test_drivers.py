@@ -54,6 +54,26 @@ def test_invalid_cnp_rejected(client: TestClient, auth_headers) -> None:
     assert resp.status_code == 422
 
 
+def test_expired_license_rejected(client: TestClient, auth_headers) -> None:
+    hdr = auth_headers(Role.admin)
+    resp = client.post("/api/drivers", json={**DRIVER, "license_expiry": "2020-01-01"}, headers=hdr)
+    assert resp.status_code == 422
+
+
+def test_duplicate_cnp_and_license_rejected(client: TestClient, auth_headers) -> None:
+    hdr = auth_headers(Role.admin)
+    assert client.post("/api/drivers", json=DRIVER, headers=hdr).status_code == 201
+
+    same_cnp = {**DRIVER, "email": "b@example.com", "license_number": "999"}
+    resp = client.post("/api/drivers", json=same_cnp, headers=hdr)
+    assert resp.status_code == 409 and "CNP" in resp.text
+
+    # Same license number, differently cased/padded.
+    same_license = {**DRIVER, "email": "c@example.com", "cnp": "1900101223355", "license_number": " 123456 "}
+    resp = client.post("/api/drivers", json=same_license, headers=hdr)
+    assert resp.status_code == 409 and "license" in resp.text
+
+
 def test_driver_role_cannot_list_drivers(client: TestClient, auth_headers) -> None:
     hdr = auth_headers(Role.driver)
     assert client.get("/api/drivers", headers=hdr).status_code == 403

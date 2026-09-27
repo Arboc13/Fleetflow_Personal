@@ -1,3 +1,4 @@
+import datetime as dt
 import re
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -8,6 +9,12 @@ from app.models.vehicle import FuelType, VehicleStatus
 PLATE_RE = re.compile(r"^[A-Z]{1,2}-\d{2,3}-[A-Z]{3}$")
 # 17-char VIN, excluding letters I, O, Q (ISO 3779)
 VIN_RE = re.compile(r"^[A-HJ-NPR-Z0-9]{17}$")
+
+
+def _validate_year(v: int | None) -> int | None:
+    if v is not None and v > dt.date.today().year:
+        raise ValueError("Manufacturing year cannot be in the future.")
+    return v
 
 
 class VehicleBase(BaseModel):
@@ -49,6 +56,12 @@ class VehicleBase(BaseModel):
 class VehicleCreate(VehicleBase):
     current_km: int = Field(default=0, ge=0)
 
+    # Only on input, so existing rows still serialize.
+    @field_validator("year")
+    @classmethod
+    def validate_year(cls, v: int) -> int:
+        return _validate_year(v)
+
 
 class VehicleUpdate(BaseModel):
     """All fields optional — PATCH semantics. Editing current_km is audited."""
@@ -61,6 +74,11 @@ class VehicleUpdate(BaseModel):
     fuel_card_number: str | None = None
     status: VehicleStatus | None = None
     current_km: int | None = Field(default=None, ge=0)
+
+    @field_validator("year")
+    @classmethod
+    def validate_year(cls, v: int | None) -> int | None:
+        return _validate_year(v)
 
 
 class VehicleRead(VehicleBase):

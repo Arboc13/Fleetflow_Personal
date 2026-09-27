@@ -28,6 +28,11 @@ def test_create_and_list_vehicle(client: TestClient, auth_headers) -> None:
     assert len(lst.json()) == 1
 
 
+def test_future_year_rejected(client: TestClient, auth_headers) -> None:
+    hdr = auth_headers(Role.admin)
+    assert client.post("/api/vehicles", json={**VALID, "year": 2099}, headers=hdr).status_code == 422
+
+
 def test_plate_normalized_and_validated(client: TestClient, auth_headers) -> None:
     hdr = auth_headers(Role.admin)
     ok = client.post("/api/vehicles", json={**VALID, "plate": "cj-99-xyz"}, headers=hdr)

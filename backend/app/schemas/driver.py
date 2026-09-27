@@ -12,6 +12,17 @@ def _validate_cnp(v: str) -> str:
     return v.strip()
 
 
+def _validate_expiry(v: dt.date | None) -> dt.date | None:
+    if v is not None and v < dt.date.today():
+        raise ValueError("Driving license is expired.")
+    return v
+
+
+def _normalize_license(v: str | None) -> str | None:
+    # Normalized so "cj 123" and "CJ 123" count as the same license number.
+    return v.strip().upper() if isinstance(v, str) else v
+
+
 class DriverBase(BaseModel):
     phone: str | None = Field(default=None, max_length=30)
     license_number: str = Field(min_length=1, max_length=30)
@@ -32,6 +43,16 @@ class DriverCreate(DriverBase):
     def validate_cnp(cls, v: str) -> str:
         return _validate_cnp(v)
 
+    @field_validator("license_expiry")
+    @classmethod
+    def validate_expiry(cls, v: dt.date) -> dt.date:
+        return _validate_expiry(v)
+
+    @field_validator("license_number", mode="before")
+    @classmethod
+    def normalize_license(cls, v: str) -> str:
+        return _normalize_license(v)
+
 
 class DriverUpdate(BaseModel):
     phone: str | None = Field(default=None, max_length=30)
@@ -46,13 +67,23 @@ class DriverUpdate(BaseModel):
     def validate_cnp(cls, v: str | None) -> str | None:
         return None if v is None else _validate_cnp(v)
 
+    @field_validator("license_expiry")
+    @classmethod
+    def validate_expiry(cls, v: dt.date | None) -> dt.date | None:
+        return _validate_expiry(v)
+
+    @field_validator("license_number", mode="before")
+    @classmethod
+    def normalize_license(cls, v: str | None) -> str | None:
+        return _normalize_license(v)
+
 
 class DriverRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     user_id: int
-    email: EmailStr
+    email: str
     full_name: str
     phone: str | None
     cnp_masked: str  # never the raw CNP

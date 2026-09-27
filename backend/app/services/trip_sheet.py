@@ -69,8 +69,18 @@ def list_trip_sheets(
     return list(db.scalars(stmt.order_by(TripSheet.id)))
 
 
+def _check_start_km(start_km: int, vehicle_km: int) -> None:
+    """A trip can't start below the vehicle's last known odometer reading."""
+    if start_km < vehicle_km:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"start_km cannot be below the vehicle's odometer ({vehicle_km} km).",
+        )
+
+
 def create_trip_sheet(db: Session, data: TripSheetCreate, user: User) -> TripSheet:
-    get_vehicle(db, data.vehicle_id)  # 404 if missing
+    vehicle = get_vehicle(db, data.vehicle_id)  # 404 if missing
+    _check_start_km(data.start_km, vehicle.current_km)
 
     if user.role == Role.driver:
         driver_id = _driver_for_user(db, user).id
@@ -106,7 +116,10 @@ def update_trip_sheet(
     if trip.status == TripStatus.closed:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=_CLOSED_MSG)
 
-    for field, value in data.model_dump(exclude_unset=True).items():
+    changes = data.model_dump(exclude_unset=True)
+    if changes.get("start_km") is not None:
+        _check_start_km(changes["start_km"], get_vehicle(db, trip.vehicle_id).current_km)
+    for field, value in changes.items():
         setattr(trip, field, value)
     db.commit()
     db.refresh(trip)

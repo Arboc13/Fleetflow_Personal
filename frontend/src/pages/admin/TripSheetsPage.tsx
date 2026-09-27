@@ -96,6 +96,11 @@ export default function TripSheetsPage() {
   );
   const vehicles = useLoad(() => VehiclesApi.list());
   const drivers = useLoad(() => DriversApi.list());
+  // Closing a trip advances the vehicle odometer, so refetch vehicles too.
+  const refresh = () => {
+    trips.reload();
+    vehicles.reload();
+  };
 
   const [createOpen, setCreateOpen] = useState(false);
   const [closing, setClosing] = useState<TripSheet | null>(null);
@@ -153,7 +158,7 @@ export default function TripSheetsPage() {
         purpose: form.purpose || null,
       });
       setCreateOpen(false);
-      trips.reload();
+      refresh();
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -301,7 +306,7 @@ export default function TripSheetsPage() {
       </Modal>
 
       {closing && (
-        <CloseTripModal trip={closing} onDone={trips.reload} onClose={() => setClosing(null)} />
+        <CloseTripModal trip={closing} onDone={refresh} onClose={() => setClosing(null)} />
       )}
     </>
   );

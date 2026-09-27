@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.crypto import decrypt, encrypt, mask_cnp
+from app.core.crypto import cnp_fingerprint, decrypt, encrypt, mask_cnp
 from app.core.security import hash_password
 from app.models.driver import Driver
 from app.models.user import Role, User
@@ -43,7 +43,32 @@ def get_driver(db: Session, driver_id: int, *, include_deleted: bool = False) ->
     return driver
 
 
+def _ensure_unique(
+    db: Session,
+    *,
+    cnp_hash: str | None = None,
+    license_number: str | None = None,
+    exclude_id: int | None = None,
+) -> None:
+    """409 on a duplicate CNP / license number (DB unique constraints back this up)."""
+    checks = [
+        (Driver.cnp_hash, cnp_hash, "A driver with this CNP already exists."),
+        (Driver.license_number, license_number, "A driver with this license number already exists."),
+    ]
+    for column, value, message in checks:
+        if value is None:
+            continue
+        stmt = select(Driver.id).where(column == value)
+        if exclude_id is not None:
+            stmt = stmt.where(Driver.id != exclude_id)
+        if db.scalar(stmt) is not None:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=message)
+
+
 def create_driver(db: Session, data: DriverCreate) -> Driver:
+    cnp_hash = cnp_fingerprint(data.cnp)
+    _ensure_unique(db, cnp_hash=cnp_hash, license_number=data.license_number)
+
     # Create the login account and the driver profile in one transaction.
     user = User(
         email=data.email,
@@ -65,6 +90,7 @@ def create_driver(db: Session, data: DriverCreate) -> Driver:
         user_id=user.id,
         phone=data.phone,
         cnp_encrypted=encrypt(data.cnp),
+        cnp_hash=cnp_hash,
         license_number=data.license_number,
         license_series=data.license_series,
         license_category=data.license_category,
@@ -79,9 +105,18 @@ def create_driver(db: Session, data: DriverCreate) -> Driver:
 def update_driver(db: Session, driver_id: int, data: DriverUpdate) -> Driver:
     driver = get_driver(db, driver_id)
     changes = data.model_dump(exclude_unset=True)
+    cnp = changes.pop("cnp", None)
+    cnp_hash = cnp_fingerprint(cnp) if cnp is not None else None
+    _ensure_unique(
+        db,
+        cnp_hash=cnp_hash,
+        license_number=changes.get("license_number"),
+        exclude_id=driver.id,
+    )
 
-    if "cnp" in changes:
-        driver.cnp_encrypted = encrypt(changes.pop("cnp"))
+    if cnp is not None:
+        driver.cnp_encrypted = encrypt(cnp)
+        driver.cnp_hash = cnp_hash
     for field, value in changes.items():
         setattr(driver, field, value)
 

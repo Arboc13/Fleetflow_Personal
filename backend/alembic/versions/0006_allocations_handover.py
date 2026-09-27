@@ -9,6 +9,7 @@ from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0006"
 down_revision: str | None = "0005"
@@ -79,12 +80,12 @@ def upgrade() -> None:
         sa.Column("end_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
             "type",
-            sa.Enum("permanent", "trip", name="allocation_type", create_type=False),
+            postgresql.ENUM("permanent", "trip", name="allocation_type", create_type=False),
             nullable=False,
         ),
         sa.Column(
             "status",
-            sa.Enum("active", "ended", name="allocation_status", create_type=False),
+            postgresql.ENUM("active", "ended", name="allocation_status", create_type=False),
             nullable=False,
             server_default="active",
         ),
@@ -110,7 +111,7 @@ def upgrade() -> None:
         sa.Column("allocation_id", sa.Integer(), nullable=False),
         sa.Column(
             "direction",
-            sa.Enum("handover", "return", name="handover_direction", create_type=False),
+            postgresql.ENUM("handover", "return", name="handover_direction", create_type=False),
             nullable=False,
         ),
         sa.Column("km", sa.Integer(), nullable=False),
@@ -119,7 +120,7 @@ def upgrade() -> None:
         sa.Column("cleanliness", sa.String(length=50), nullable=True),
         sa.Column(
             "status",
-            sa.Enum("draft", "closed", name="handover_status", create_type=False),
+            postgresql.ENUM("draft", "closed", name="handover_status", create_type=False),
             nullable=False,
             server_default="draft",
         ),

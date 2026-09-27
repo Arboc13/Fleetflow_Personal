@@ -67,6 +67,14 @@ def test_create_and_close_updates_odometer(client: TestClient, auth_headers) -> 
     veh = client.get(f"/api/vehicles/{vid}", headers=admin).json()
     assert veh["current_km"] == 20250
 
+    # The next trip can't start from the old reading.
+    stale = client.post(
+        "/api/trip-sheets",
+        json={"vehicle_id": vid, "driver_id": did, "departure_at": "2026-06-02T08:00:00", "start_km": 20000},
+        headers=admin,
+    )
+    assert stale.status_code == 422
+
 
 def test_closed_trip_sheet_is_immutable(client: TestClient, auth_headers) -> None:
     admin = auth_headers(Role.admin)
@@ -125,7 +133,7 @@ def test_driver_creates_own_and_cannot_see_others(client: TestClient, auth_heade
     # A trip sheet for another driver_id, created by admin, is not visible/editable.
     other_did = client.post(
         "/api/drivers",
-        json={**DRIVER, "email": "alt@example.com", "cnp": "1900101223355"},
+        json={**DRIVER, "email": "alt@example.com", "cnp": "1900101223355", "license_number": "654321"},
         headers=admin,
     ).json()["id"]
     other_tid = client.post(

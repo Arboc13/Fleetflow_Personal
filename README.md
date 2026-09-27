@@ -98,13 +98,3 @@ frontend/
 docker-compose.yml
 ```
 
-## Build order (milestones)
-
-1. **Scaffold** — repo, Docker Postgres, FastAPI skeleton, JWT auth + RBAC ← _done_
-2. **Vehicles + drivers CRUD** (plate/VIN validation, CNP masking, audit log) ← _done_
-3. **Allocations (no-overlap exclusion constraints) + handover reports (immutability)** ← _done_
-4. **Documents + service records + maintenance rules** ← _done_
-5. **Trip sheets + fuel import parser** ← _done_
-6. **Alert engine (APScheduler) + notification center** ← _done_
-7. **TCO + utilization reports (xlsx/PDF export)** ← _done_
-8. **Dual UI + PWA** (driver mobile pages, admin dashboard, LAN access) ← _done_

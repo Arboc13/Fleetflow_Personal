@@ -41,7 +41,7 @@ export default function NotificationsPage() {
                 key={n.id}
                 className={cls(
                   "flex items-center gap-3 py-2.5 text-sm",
-                  n.read_at && "opacity-60",
+                  !!n.read_at && "opacity-60",
                 )}
               >
                 <Badge value={n.severity} />

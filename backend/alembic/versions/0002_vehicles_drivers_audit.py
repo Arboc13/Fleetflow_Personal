@@ -9,6 +9,7 @@ from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0002"
 down_revision: str | None = "0001"
@@ -36,7 +37,7 @@ def upgrade() -> None:
         sa.Column("year", sa.Integer(), nullable=False),
         sa.Column(
             "fuel_type",
-            sa.Enum(
+            postgresql.ENUM(
                 "petrol", "diesel", "electric", "hybrid", "lpg",
                 name="fuel_type", create_type=False,
             ),
@@ -45,7 +46,7 @@ def upgrade() -> None:
         sa.Column("current_km", sa.Integer(), nullable=False, server_default="0"),
         sa.Column(
             "status",
-            sa.Enum(
+            postgresql.ENUM(
                 "active", "in_service", "unavailable",
                 name="vehicle_status", create_type=False,
             ),
